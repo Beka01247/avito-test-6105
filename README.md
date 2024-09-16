@@ -1,30 +1,106 @@
+# Тестовый бэкенд для Avito с использованием Docker
+
+Этот проект представляет собой бэкенд API, написанный на Go с базой данных PostgreSQL. Проект контейнеризирован с использованием Docker и управляется с помощью Docker Compose.
+
 ## Структура проекта
-В данном проекте находится типовой пример для сборки приложения в докере из находящящегося в проекте Dockerfile. Пример на Gradle используется исключительно в качестве шаблона, вы можете переписать проект как вам хочется - главное, что бы Dockerfile находился в корне проекта и приложение отвечало по порту 8080. Других требований нет.
 
-## Задание
-В папке "задание" размещена задача.
-
-## Сбор и развертывание приложения
-Приложение должно отвечать по порту `8080` (жестко задано в настройках деплоя). После деплоя оно будет доступно по адресу: `https://<имя_проекта>-<уникальный_идентификатор_группы_группы>.avito2024.codenrock.com`
-
-Пример: Для кода из репозитория `/avito2024/cnrprod-team-27437/task1` сформируется домен
-
+```bash
+/project-root
+   /internal       # Внутренняя структура Go-приложения
+      /db          # Логика подключения к базе данных
+      /config      # Файлы конфигурации и переменные окружения
+      /controllers # HTTP-контроллеры для API
+      /routes      # Маршруты API
+          routes.go
+   /cmd            # Точка входа в приложение
+      main.go
+   Dockerfile      # Docker-конфигурация для сборки Go-приложения
+   docker-compose.yml # Конфигурация Docker Compose для всего стека
+   go.mod
+   go.sum
 ```
-task1-5447.avito2024.codenrock.com
+
+Как запустить проект
+Шаги:
+
+1. Установлен Docker и Docker Compose.
+
+2. Склонируйте репозиторий на локальную машину:
+
+```bash
+git clone https://github.com/yourusername/project.git
+cd project
 ```
 
-**Для удобства домен указывается в логе сборки**
+Создать .env файл в корне проекта с переменными окружения:
 
-Логи сборки проекта находятся на вкладке **CI/CD** -> **Jobs**.
+```bash
+makefile
+SERVER_ADDRESS=8080
+POSTGRES_CONN=postgres://postgres:240219@localhost:5432/test_avito
+POSTGRES_USERNAME=postgres
+POSTGRES_PASSWORD=240219
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_DATABASE=test_avito
+```
 
-Ссылка на собранный проект находится на вкладке **Deployments** -> **Environment**. Вы можете сразу открыть URL по кнопке "Open".
+Соберать и запустить контейнеры с помощью Docker Compose:
 
-## Доступ к сервисам
+```bash
+bash
+docker-compose up --build
+```
 
-### Kubernetes
-На вашу команду выделен kubernetes namespace. Для подключения к нему используйте утилиту `kubectl` и `*.kube.config` файл, который вам выдадут организаторы.
+Приложение будет доступно по адресу: http://localhost:8080.
 
-Состояние namespace, работающие pods и логи приложений можно посмотреть по адресу [https://dashboard.avito2024.codenrock.com/](https://dashboard.avito2024.codenrock.com/). Для открытия дашборда необходимо выбрать авторизацию через Kubeconfig и указать путь до выданного вам `*.kube.config` файла
+## Конфигурация Docker
 
+В файле docker-compose.yml описаны два сервиса:
 
+1. PostgreSQL:
+   Используется образ postgres:latest.
+   Порт: 5432.
+   Данные сохраняются в volume database_dockerizing.
+2. API:
+   Сборка образа с помощью Dockerfile.
+   Порт: 8080.
+   Взаимодействие с базой данных через PostgreSQL.
 
+## Команды
+
+Сборка проекта:
+
+```bash
+docker-compose build
+```
+
+Запуск проекта:
+
+```bash
+docker-compose up
+```
+
+Остановка проекта:
+
+```bash
+docker-compose down
+```
+
+Переменные окружения
+Все переменные окружения находятся в .env файле:
+
+```bash
+SERVER_ADDRESS — адрес сервера (по умолчанию 8080).
+POSTGRES_CONN — строка подключения к базе данных.
+POSTGRES_USERNAME — имя пользователя PostgreSQL.
+POSTGRES_PASSWORD — пароль PostgreSQL.
+POSTGRES_HOST — хост базы данных.
+POSTGRES_PORT — порт базы данных.
+POSTGRES_DATABASE — название базы данных.
+```
+
+## Деплой
+
+Приложение задеплоено и доступно по адресу:
+[https://cnrprod1725724653-team-77354-32538.avito2024.codenrock.com/](https://cnrprod1725724653-team-77354-32538.avito2024.codenrock.com/)
